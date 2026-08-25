@@ -1,11 +1,11 @@
-# AutoGAD — Claude-powered AI assistant for AutoCAD 2025
+# AutoGAD — AI-powered assistant for AutoCAD 2025
 
 A persistent, in-CAD AI agent. Ask questions about the active drawing, run engineering
 calculations, and (with confirmation) modify the drawing — all from a docked chat palette.
 Backed by the Claude API (`claude-opus-5` by default) — or any OpenAI-compatible API (OpenAI,
 OpenRouter, a local server) — with a tool-use loop over the **live** drawing database. Sister project of [FreeGAD](../FreeGAD) (the same agent inside FreeCAD).
 
-What Claude can do inside AutoCAD:
+What AI can do inside AutoCAD:
 
 - **See the drawing** — a compact snapshot (meta, units, extents, layers, layouts, entity counts,
   block inventory, schedule text) goes into every conversation; tools read the live details
@@ -153,7 +153,7 @@ when the palette opens; a short excerpt of the last 16 lines is given to Claude 
 Recycling: 400 entries / 400 KB per file, files idle for 180 days deleted, folder capped at 25 MB.
 **Memory → Clear chat history** deletes the current drawing's file.
 
-## How it feeds Claude (architecture)
+## How it feeds AI (architecture)
 
 - **System prompt, in cache order:** persona → compact drawing snapshot (**prompt-cached** with
   `cache_control`) → memory notes → recent-history excerpt. A second cache breakpoint sits on the

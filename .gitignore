@@ -1,0 +1,45 @@
+# .NET build output
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Installer / packaging output (WiX, Inno Setup)
+dist/
+Output/
+*.msi
+*.wixpdb
+*Setup.exe
+
+# Windows SDK BuildTools NuGet, auto-downloaded by sign.ps1 (~54 MB)
+tools/
+
+# Code-signing material
+*.pfx
+*.p12
+*.snk
+
+# Local scratch / DWG dump analysis
+analysis*.txt
+tables.txt
+extract.py
+*_dump.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs / env
+*.log
+.env
+.env.*
+
+# Editors / OS / Claude local settings
+.idea/
+.vscode/
+.claude/settings.local.json
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

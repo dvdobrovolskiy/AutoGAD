@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Autodesk Autoloader manifest. AutoCAD scans for AutoGAD.bundle folders in:
+    %PROGRAMFILES%\Autodesk\ApplicationPlugins\   (all users - what the MSI installs)
+    %APPDATA%\Autodesk\ApplicationPlugins\        (current user)
+  The DLL must sit at .\Contents\AutoGAD.dll relative to this file.
+-->
+<ApplicationPackage
+    SchemaVersion="1.0"
+    AutodeskProduct="AutoCAD"
+    ProductType="Application"
+    Name="AutoGAD"
+    AppVersion="1.0.0"
+    Description="Claude-powered AI assistant for AutoCAD"
+    ProductCode="{7C4A8D09-CA37-4E0B-9A1D-A07A6F1B2C3D}"
+    UpgradeCode="{2F5B1E77-9C63-4A18-B0D4-6E3C51A9F002}">
+
+  <CompanyDetails Name="AutoGAD" />
+
+  <Components Description="AutoGAD .NET module">
+    <!-- SeriesMin only: AutoCAD 2025 (R25.0) and later. No upper bound so newer releases can load it. -->
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD*" SeriesMin="R25.0" />
+
+    <ComponentEntry
+        AppName="AutoGAD"
+        Version="1.0.0"
+        ModuleName="./Contents/AutoGAD.dll"
+        AppType="NET"
+        AppDescription="Claude-powered AI assistant"
+        LoadOnAutoCADStartup="True"
+        LoadOnCommandInvocation="True">
+      <Commands GroupName="AUTOGAD">
+        <Command Global="AUTOGAD"    Local="AUTOGAD" />
+        <Command Global="AUTOGADKEY" Local="AUTOGADKEY" />
+        <Command Global="AUTOGADCFG" Local="AUTOGADCFG" />
+        <Command Global="AUTOGADVER" Local="AUTOGADVER" />
+        <Command Global="AUTOGADMEM" Local="AUTOGADMEM" />
+        <Command Global="AUTOGADMEMCLEAR" Local="AUTOGADMEMCLEAR" />
+        <Command Global="GADEXPORT"  Local="GADEXPORT" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>
+

@@ -1,0 +1,11 @@
+C:\MEGA\Hobby\AutoGAD\bin\Release\AutoGAD.dll
+C:\MEGA\Hobby\AutoGAD\bin\Release\AutoGAD.pdb
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.csproj.AssemblyReference.cache
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.GeneratedMSBuildEditorConfig.editorconfig
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.AssemblyInfoInputs.cache
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.AssemblyInfo.cs
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.csproj.CoreCompileInputs.cache
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.dll
+C:\MEGA\Hobby\AutoGAD\obj\Release\refint\AutoGAD.dll
+C:\MEGA\Hobby\AutoGAD\obj\Release\AutoGAD.pdb
+C:\MEGA\Hobby\AutoGAD\obj\Release\ref\AutoGAD.dll

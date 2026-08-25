@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later
+     Copyright (C) 2026 Dmitriy Dobrovolskiy dima@dobrovolskiy.com -->
+
+<!--
+  AutoGAD MSI - per-machine install of the Autodesk Autoloader bundle.
+
+  Layout produced on the target machine:
+    %ProgramFiles%\Autodesk\ApplicationPlugins\AutoGAD.bundle\
+        PackageContents.xml
+        Contents\AutoGAD.dll
+
+  AutoCAD scans that folder at startup, so no registry demand-load entries and no custom
+  actions are needed - which also means uninstall is a plain file removal.
+
+  The API key is deliberately NOT handled here: it is encrypted per Windows user (DPAPI),
+  so each user sets their own on first use via the AUTOGADKEY command.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package
+      Name="AutoGAD for AutoCAD"
+      Manufacturer="AutoGAD"
+      Version="$(var.ProductVersion)"
+      UpgradeCode="2F5B1E77-9C63-4A18-B0D4-6E3C51A9F002"
+      Scope="perMachine"
+      Compressed="yes"
+      InstallerVersion="500">
+
+    <SummaryInformation
+        Description="AutoGAD - Claude-powered AI assistant for AutoCAD 2025+"
+        Manufacturer="AutoGAD" />
+
+    <!-- Upgrades replace older versions in place; downgrades are blocked with a clear message. -->
+    <MajorUpgrade
+        AllowSameVersionUpgrades="yes"
+        DowngradeErrorMessage="A newer version of AutoGAD is already installed. Uninstall it first from Apps and Features." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- === no AutoCAD launch condition, deliberately ===
+
+         There is no reliable version-agnostic way to detect AutoCAD: HKLM\Software\Autodesk\AutoCAD\R25.0
+         holds no value of its own (only per-SKU subkeys like ACAD-8101:409, which vary by product and
+         locale), and there is no App Paths\acad.exe entry.
+
+         More importantly, a check pinned to R25.0 would be wrong: PackageContents.xml declares
+         SeriesMin="R25.0" with no upper bound, so this plugin supports AutoCAD 2026+ too - a hardcoded
+         R25.0 condition would refuse to install on a machine that has only a newer release.
+
+         Installing the bundle on a machine without AutoCAD is harmless: it is two inert files that
+         AutoCAD picks up whenever it is installed. So we install unconditionally and state the
+         requirement in the license page and the exit dialog instead.
+
+         .NET 8 desktop runtime ships with AutoCAD 2025, so it is not checked separately either. -->
+
+    <!-- === files -->
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="AutodeskDir" Name="Autodesk">
+        <Directory Id="AppPluginsDir" Name="ApplicationPlugins">
+          <Directory Id="BundleDir" Name="AutoGAD.bundle">
+            <Directory Id="BundleContentsDir" Name="Contents" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <ComponentGroup Id="BundleComponents">
+      <Component Id="PackageContentsXml" Directory="BundleDir" Guid="A1C3E5F7-1B2D-4E6F-8A90-B1C2D3E4F501">
+        <File Id="PackageContents.xml"
+              Source="$(var.BundleSourceDir)\PackageContents.xml"
+              KeyPath="yes" />
+      </Component>
+
+      <Component Id="AutoGadDll" Directory="BundleContentsDir" Guid="A1C3E5F7-1B2D-4E6F-8A90-B1C2D3E4F502">
+        <File Id="AutoGAD.dll"
+              Source="$(var.DllSourcePath)"
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <Feature Id="Main" Title="AutoGAD plugin" Level="1" AllowAbsent="no">
+      <ComponentGroupRef Id="BundleComponents" />
+    </Feature>
+
+    <!-- === UI -->
+
+    <ui:WixUI Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+
+    <!-- Shown on the last wizard page. -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT"
+              Value="Restart AutoCAD, then type AUTOGAD to open the chat palette. The first time you ask a question you will be prompted for your Anthropic API key (or run AUTOGADKEY). Each Windows user sets their own key; it is stored encrypted." />
+
+  </Package>
+</Wix>
+

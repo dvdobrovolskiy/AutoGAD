@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "xjrERpKCXr0=",
+  "success": true,
+  "projectFilePath": "C:\\MEGA\\Hobby\\AutoGAD\\AutoGAD.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dima\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.30\\microsoft.netcore.app.ref.8.0.30.nupkg.sha512",
+    "C:\\Users\\dima\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.30\\microsoft.windowsdesktop.app.ref.8.0.30.nupkg.sha512",
+    "C:\\Users\\dima\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.30\\microsoft.aspnetcore.app.ref.8.0.30.nupkg.sha512"
+  ],
+  "logs": []
+}

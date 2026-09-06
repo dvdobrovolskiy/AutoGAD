@@ -3,7 +3,7 @@
 
 <#
 .SYNOPSIS
-  Installs (or removes) the AutoGAD plugin for AutoCAD 2025 and stores the Anthropic API key.
+  Installs (or removes) the AutoGAD plugin for AutoCAD 2025/2026+ and stores the Anthropic API key.
 
 .DESCRIPTION
   Builds AutoGAD.dll, copies it to %APPDATA%\AutoGAD\bin, and registers it for demand-loading under
@@ -219,15 +219,17 @@ function Set-ApiKeyInteractive {
 }
 
 # ---------------------------------------------------------------- registry
-# Every product profile under R25.0+ (AutoCAD 2025+, .NET 8). Older releases run .NET Framework
-# and would show a load error at startup if this assembly were registered there.
+# Every product profile under R25.0+ (AutoCAD 2025 = R25.0, 2026 = R25.1, ...; all .NET 8). Older
+# releases run .NET Framework and would show a load error at startup if this assembly were registered
+# there. A product profile (ACAD-XXXX:YYY) that AutoCAD has been started with has a Profiles subkey;
+# AutoCAD 2025 also pre-created Applications there, AutoCAD 2026 does not (Register-Plugin creates it).
 function Get-AcadProfiles {
     if (-not (Test-Path $acadBase)) { return @() }
     Get-ChildItem $acadBase -ErrorAction SilentlyContinue | Where-Object {
         $_.PSChildName -match '^R(\d+)' -and [int]$Matches[1] -ge 25
     } | ForEach-Object {
         Get-ChildItem $_.PSPath -ErrorAction SilentlyContinue | Where-Object {
-            Test-Path (Join-Path $_.PSPath 'Applications')
+            (Test-Path (Join-Path $_.PSPath 'Profiles')) -or (Test-Path (Join-Path $_.PSPath 'Applications'))
         }
     }
 }
@@ -319,15 +321,18 @@ foreach ($bundleRoot in @($env:ProgramFiles, $env:APPDATA)) {
     }
 }
 
-$acadDir = 'C:\Program Files\Autodesk\AutoCAD 2025'
-if (-not (Test-Path (Join-Path $acadDir 'acmgd.dll'))) {
+# The API assemblies come from the oldest installed R25.x release (same probe order as AutoGAD.csproj),
+# so the DLL never depends on an API a newer release added. Any R25.x AutoCAD then loads it.
+$acadDir = @('2025', '2026', '2027') | ForEach-Object { "C:\Program Files\Autodesk\AutoCAD $_" } |
+    Where-Object { Test-Path (Join-Path $_ 'acmgd.dll') } | Select-Object -First 1
+if (-not $acadDir) {
     if ($NoBuild) {
-        Write-Warning "AutoCAD 2025 not found at $acadDir — installing the prebuilt DLL anyway."
+        Write-Warning "No AutoCAD 2025+ found under C:\Program Files\Autodesk — installing the prebuilt DLL anyway."
     } else {
-        throw "AutoCAD 2025 not found at $acadDir (acmgd.dll missing). Install AutoCAD 2025, or use -NoBuild to install a prebuilt DLL."
+        throw "No AutoCAD 2025+ found under C:\Program Files\Autodesk (acmgd.dll missing). Install AutoCAD 2025 or 2026, or use -NoBuild to install a prebuilt DLL."
     }
 } else {
-    Write-Ok "AutoCAD 2025 found at $acadDir"
+    Write-Ok "AutoCAD found at $acadDir"
 }
 
 if (Get-Process -Name 'acad' -ErrorAction SilentlyContinue) {

@@ -1,4 +1,4 @@
-# AutoGAD — AI-powered assistant for AutoCAD 2025
+# AutoGAD — AI-powered assistant for AutoCAD 2025 / 2026
 
 A persistent, in-CAD AI agent. Ask questions about the active drawing, run engineering
 calculations, and (with confirmation) modify the drawing — all from a docked chat palette.
@@ -28,7 +28,7 @@ What AI can do inside AutoCAD:
 ### Option A — installer (end users)
 
 Run `AutoGADSetup.exe`. It installs per-user (no admin) to `%APPDATA%\AutoGAD\bin`, registers the
-plugin for demand-loading in every AutoCAD 2025+ profile of your Windows account, and optionally
+plugin for demand-loading in every AutoCAD 2025/2026+ profile of your Windows account, and optionally
 asks which provider to use and for your API key. Close AutoCAD first (the installer checks). Then start AutoCAD: an
 **AutoGAD** tab appears on the ribbon (and an *AutoGAD* pull-down when `MENUBAR` is 1); `AUTOGAD`
 opens the chat palette.
@@ -186,7 +186,8 @@ certificate from a CA (hardware token / cloud HSM since 2023; EV gets reputation
 
 - *No AutoGAD ribbon tab / `Unknown command "AUTOGAD"`* after the per-user installer — start
   AutoCAD once if it was never run under this Windows account (the installer registers under
-  existing `HKCU\Software\Autodesk\AutoCAD\R25.0\<product>` profiles), then reinstall. Or load once
+  existing `HKCU\Software\Autodesk\AutoCAD\R25.x\<product>` profiles — R25.0 is AutoCAD 2025,
+  R25.1 is 2026), then reinstall. Or load once
   with `NETLOAD` → `%APPDATA%\AutoGAD\bin\AutoGAD.dll` and run `AUTOGADVER`.
 - Same symptom after the **MSI** — almost always `APPAUTOLOAD`: if it reports `0`, enter `14` on the
   AutoCAD command line and restart (the autoloader is off, so *no* bundle can load). Also check that
@@ -223,9 +224,11 @@ certificate from a CA (hardware token / cloud HSM since 2023; EV gets reputation
 | `sign.ps1` | Signs + timestamps an MSI/EXE; fetches `signtool` if missing |
 | `NuGet.config` | Pins nuget.org (the machine-level config lists a source that doesn't exist) |
 
-Building needs a .NET SDK (`net8.0-windows`, AutoCAD 2025's runtime; a .NET 9 SDK builds it fine).
-The project references `acmgd`, `acdbmgd`, `accoremgd`, `AcWindows` and `AdWindows` from
-`C:\Program Files\Autodesk\AutoCAD 2025` with `Private=false`.
+Building needs a .NET SDK (`net8.0-windows`, the runtime of AutoCAD 2025 and 2026; a .NET 9 SDK
+builds it fine). The project references `acmgd`, `acdbmgd`, `accoremgd`, `AcWindows` and `AdWindows`
+with `Private=false` from the oldest installed release under `C:\Program Files\Autodesk\AutoCAD 2025`,
+`… 2026`, `… 2027` (override with `dotnet build -p:AcadDir="…"`). All R25.x releases share one
+binary-compatible .NET 8 API, so a single `AutoGAD.dll` loads in AutoCAD 2025 and 2026 alike.
 
 ## Notes / current limits
 

@@ -9,8 +9,9 @@
 ;   %APPDATA%\AutoGAD\apikey.pending             optional API key, encrypted by the plugin on first load
 ;
 ; Registry demand-loading (not the .bundle autoloader) on purpose: it works even when the AutoCAD
-; profile has APPAUTOLOAD=0, which switches every bundle off. Only R25.0+ (AutoCAD 2025+, .NET 8)
-; profiles are registered - older releases run .NET Framework and cannot load this assembly.
+; profile has APPAUTOLOAD=0, which switches every bundle off. Only R25.0+ profiles are registered
+; (AutoCAD 2025 = R25.0, AutoCAD 2026 = R25.1, ... - all .NET 8, one binary-compatible API); older
+; releases run .NET Framework and cannot load this assembly.
 ;
 ; Do not combine with the MSI (build-msi.ps1): two copies of the assembly from different paths make
 ; AutoCAD fail on duplicate command definitions. Setup warns if it finds the MSI's bundle.
@@ -101,7 +102,16 @@ begin
   Result := StrToIntDef(S, 0);
 end;
 
-{ Walk HKCU\Software\Autodesk\AutoCAD\R*\<product> and register/unregister in every profile that has an Applications key. }
+{ A product profile (ACAD-XXXX:YYY) that AutoCAD has actually been started with: it has a Profiles
+  subkey. Siblings such as "Update" have none. AutoCAD 2025 also pre-created an Applications subkey
+  there, AutoCAD 2026 does not - it is only created (by us) when the first plugin registers, and
+  AutoCAD reads it either way. }
+function IsAcadProfile(const Prod: String): Boolean;
+begin
+  Result := RegKeyExists(HKCU, Prod + '\Profiles') or RegKeyExists(HKCU, Prod + '\Applications');
+end;
+
+{ Walk HKCU\Software\Autodesk\AutoCAD\R25+\<product> and register/unregister in every product profile. }
 function ForEachAcadProduct(Register: Boolean): Integer;
 var
   Releases, Products, Cmds: TArrayOfString;
@@ -113,12 +123,12 @@ begin
   if not RegGetSubkeyNames(HKCU, AcadBase, Releases) then exit;
   for i := 0 to GetArrayLength(Releases) - 1 do
   begin
-    if ReleaseMajor(Releases[i]) < 25 then continue;    { .NET 8 plugin: AutoCAD 2025+ only }
+    if ReleaseMajor(Releases[i]) < 25 then continue;    { .NET 8 plugin: AutoCAD 2025 (R25.0) / 2026 (R25.1) and later only }
     if not RegGetSubkeyNames(HKCU, AcadBase + '\' + Releases[i], Products) then continue;
     for j := 0 to GetArrayLength(Products) - 1 do
     begin
       Prod := AcadBase + '\' + Releases[i] + '\' + Products[j];
-      if not RegKeyExists(HKCU, Prod + '\Applications') then continue;
+      if not IsAcadProfile(Prod) then continue;
       AppKey := Prod + '\Applications\AutoGAD';
       if Register then
       begin
@@ -195,7 +205,7 @@ begin
 
   N := ForEachAcadProduct(True);
   if N = 0 then
-    MsgBox('No AutoCAD 2025+ profile was found under HKEY_CURRENT_USER, so the plugin could not be registered for auto-loading.' + #13#10 +
+    MsgBox('No AutoCAD 2025/2026 (or newer) profile was found under HKEY_CURRENT_USER, so the plugin could not be registered for auto-loading.' + #13#10 +
            'Start AutoCAD once (this creates the profile), then run this installer again - or load it manually with NETLOAD:' + #13#10 +
            ExpandConstant('{app}\bin\AutoGAD.dll'), mbInformation, MB_OK);
 

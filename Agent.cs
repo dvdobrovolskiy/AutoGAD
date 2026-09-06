@@ -14,7 +14,7 @@ namespace AutoGAD
     public class Agent
     {
         private const string Persona =
-            "You are AutoGAD, an AI assistant embedded inside AutoCAD 2025. You help an engineer " +
+            "You are AutoGAD, an AI assistant embedded inside AutoCAD (2025 or newer). You help an engineer " +
             "understand, audit, and modify the active drawing. You specialise in Russian working " +
             "documentation (РД) and electrical/lighting design (ЭОМ/АХП), and can perform engineering " +
             "calculations (loads, currents, breaker selection, cable checks).\n\n" +

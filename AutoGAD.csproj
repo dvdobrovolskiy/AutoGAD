@@ -13,33 +13,51 @@
     <AssemblyName>AutoGAD</AssemblyName>
     <RootNamespace>AutoGAD</RootNamespace>
     <!-- Kept in sync with version.txt by make_installer.bat; shown by AUTOGADVER and in the palette. -->
-    <Version>1.0.5</Version>
+    <Version>1.0.7</Version>
     <!-- AutoCAD provides the API assemblies and the shared framework; don't copy them. -->
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
 
+  <!--
+    AutoCAD API assemblies. Every R25.x release (AutoCAD 2025 = R25.0, 2026 = R25.1, ...) runs .NET 8
+    and keeps the managed API binary-compatible, so one DLL serves all of them. The oldest installed
+    release is preferred so the build cannot pick up an API that older releases lack.
+    Override with:  dotnet build -p:AcadDir="C:\Program Files\Autodesk\AutoCAD 2026"
+  -->
+  <PropertyGroup>
+    <AcadDir Condition="'$(AcadDir)' == '' And Exists('$(ProgramW6432)\Autodesk\AutoCAD 2025\acmgd.dll')">$(ProgramW6432)\Autodesk\AutoCAD 2025</AcadDir>
+    <AcadDir Condition="'$(AcadDir)' == '' And Exists('$(ProgramW6432)\Autodesk\AutoCAD 2026\acmgd.dll')">$(ProgramW6432)\Autodesk\AutoCAD 2026</AcadDir>
+    <AcadDir Condition="'$(AcadDir)' == '' And Exists('$(ProgramW6432)\Autodesk\AutoCAD 2027\acmgd.dll')">$(ProgramW6432)\Autodesk\AutoCAD 2027</AcadDir>
+  </PropertyGroup>
+
+  <Target Name="CheckAcadDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(AcadDir)' == '' Or !Exists('$(AcadDir)\acmgd.dll')"
+           Text="No AutoCAD 2025+ installation found (looked for acmgd.dll under $(ProgramW6432)\Autodesk\AutoCAD 2025..2027). Install AutoCAD, or pass -p:AcadDir=&quot;&lt;AutoCAD folder&gt;&quot;." />
+    <Message Importance="high" Text="AutoCAD API assemblies: $(AcadDir)" />
+  </Target>
+
   <ItemGroup>
     <Reference Include="acmgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2025\acmgd.dll</HintPath>
+      <HintPath>$(AcadDir)\acmgd.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2025\acdbmgd.dll</HintPath>
+      <HintPath>$(AcadDir)\acdbmgd.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="accoremgd">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2025\accoremgd.dll</HintPath>
+      <HintPath>$(AcadDir)\accoremgd.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="AcWindows">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2025\AcWindows.dll</HintPath>
+      <HintPath>$(AcadDir)\AcWindows.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <!-- Ribbon API (Autodesk.Windows namespace). -->
     <Reference Include="AdWindows">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2025\AdWindows.dll</HintPath>
+      <HintPath>$(AcadDir)\AdWindows.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

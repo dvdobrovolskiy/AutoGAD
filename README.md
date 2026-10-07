@@ -1,6 +1,6 @@
 # AutoGAD — AI-powered assistant for AutoCAD 2025 / 2026
 
-A persistent, in-CAD AI agent making one more profession obsolete. Does draw by prompt. Works with files (import sample, amend, export result). Ask questions about the active drawing, run engineering
+A persistent, in-CAD AI agent making one more profession obsolete. Does draw by prompt. Works with files (import some, amend, export result). Ask questions about the active drawing, run engineering
 calculations, and (with confirmation) modify the drawing — all from a docked chat palette.
 Backed by the Claude API (`claude-opus-5` by default) — or any OpenAI-compatible API (OpenAI,
 OpenRouter, a local server) — with a tool-use loop over the **live** drawing database. Sister project of [FreeGAD](../FreeGAD) (the same agent inside FreeCAD).

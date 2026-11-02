@@ -1,6 +1,8 @@
 # AutoGAD — AI-powered assistant for AutoCAD 2025 / 2026
 
-A persistent, in-CAD AI agent making one more profession obsolete. Does draw by prompt. Works with files (import some, amend, export result). Ask questions about the active drawing, run engineering
+A persistent, in-CAD AI agent making one more profession obsolete. Does draw by prompt. Work inside AutoCAD (just bring your API ley, anthropic or OpenAI (deekseek and other will do)) or use you own agents, desktop or console Claude or ChatGPT or other agents. Just tell open AutoCAD with loaded AutoGAD plugin (just install and u good to go) and ask your agent to "connect to AutoCAD with AutoGAD plugin and local MCP server started". Your agent will be able to do any job AutoCAD can do. 
+
+Works with files (import some, amend, export result). Ask questions about the active drawing, run engineering
 calculations, and (with confirmation) modify the drawing — all from a docked chat palette. Now served with local MCP server. Open AutoCAD, make sure AutoGAD loaded and local MCP server started (settings), ask your favorite AI agent to connect to use and it will use AutoCAD as a tool in your research.  
 Backed by the Claude API (`claude-opus-5` by default) — or any OpenAI-compatible API (OpenAI,
 OpenRouter, a local server) — with a tool-use loop over the **live** drawing database. Sister project of [FreeGAD](../FreeGAD) (the same agent inside FreeCAD).
